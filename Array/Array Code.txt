@@ -1,0 +1,144 @@
+                                                         
+                                         Course.h
+
+
+
+#pragma once
+#include "Student.h"
+#include <string>
+#include <iostream>
+using namespace std;
+class Course {
+private:
+    int courseId;
+    string courseName;
+    int capacity;                 // Total slots in the course
+    int currentlyEnrolled;        // Students currently enrolled
+    Student* students;            // Dynamic array of students
+public:
+    Course(int courseId, string courseName, int capacity); 
+
+    void shift(int index);      // Method to shift students after removal
+    void display();             // Display course and student details
+
+    void addStudent(Student s); // Add a student to the course
+    void removeStudent(int id); // Remove a student by ID
+};
+                                                    
+                                           Course.cpp
+
+
+
+#include "Course.h"
+// Constructor
+Course::Course(int courseId, string courseName, int capacity) 
+{
+    this->courseId = courseId;
+    this->courseName = courseName;
+    this->capacity = capacity;
+    this->currentlyEnrolled = 0;
+    students = new Student[capacity]; // Dynamic allocation of student array
+}
+Course::shift(int index) 
+{
+    for (int i = index; i < currentlyEnrolled - 1; i++)
+    {
+        students[i].setId(students[i + 1].getId());
+        students[i].setName(students[i + 1].getName());
+    }
+    currentlyEnrolled--;
+}
+Course::display() 
+{
+    cout << "\t\tCourse ID: " << courseId << endl;
+    cout << "\t\tCourse Name: " << courseName << endl;
+    cout << "\t\tTotal Enrolled: " << currentlyEnrolled << endl;
+    cout << "\t\tRemaining Slots: " << capacity - currentlyEnrolled << endl;
+
+    for (int i = 0; i < currentlyEnrolled; i++) 
+    {
+        cout << "\tStudent ID: " << students[i].getId()
+             << "\t Student Name: " << students[i].getName() << endl;
+    }
+}
+// Add a student to the coursevoid Course::addStudent(Student s) 
+{
+    if (currentlyEnrolled < capacity) 
+    {
+        students[currentlyEnrolled].setId(s.getId());
+        students[currentlyEnrolled].setName(s.getName());
+        currentlyEnrolled++;
+    }
+    else 
+    {
+        cout << "Course is full. Cannot add more students." << endl;
+    }
+}
+// Remove a student by IDvoid Course::removeStudent(int id) 
+{
+    for (int i = 0; i < currentlyEnrolled; i++) 
+    {
+        if (students[i].getId() == id) 
+        {
+            shift(i);
+            cout << "Student with ID " << id << " removed." << endl;
+            return;
+        }
+    }
+    cout << "Student with ID " << id << " not found." << endl;
+}
+________________________________________
+                                          
+
+                                               main.cpp
+
+
+
+#include "Course.h"
+#include "Student.h"
+int main() {
+    // Create a Course object
+    Course course1(3461, "Cyber Security DSA", 3);
+
+    // Create Student objects
+    Student s1(1, "Awais ");
+    Student s2(2, "Ali Khan");
+    Student s3(3, "Wahid");
+
+    // Add students to the course
+    course1.addStudent(s1);
+    course1.addStudent(s2);
+    course1.addStudent(s3);
+
+    cout << "\nCourse Details after adding students:\n";
+    course1.display();
+
+    // Remove a student
+    course1.removeStudent(2);
+
+    cout << "\nCourse Details after removing a student:\n";
+    course1.display();
+
+    return 0;
+}
+________________________________________
+Output Example:
+yaml
+Copy code
+Course Details after adding students:
+		Course ID: 3461
+		Course Name: Cyber Security DSA
+		Total Enrolled: 3
+		Remaining Slots: 0
+	Student ID: 53015	 Student Name: Awais
+	Student ID: 53014	 Student Name: Ali Khan
+	Student ID: 53013	 Student Name: Wahid
+Student with ID 53014 removed.
+Course Details after removing a student:
+		Course ID: 3461
+		Course Name: Cyber Security DSA
+		Total Enrolled: 2
+		Remaining Slots: 1
+	Student ID: 53015	 Student Name: Awais
+	Student ID: 53013	 Student Name: Wahid
+
