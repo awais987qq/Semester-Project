@@ -1,0 +1,150 @@
+Node.h
+class Node {public:
+    int data;
+    Node* next;
+
+    Node();
+    Node(int data);
+};
+Node.cpp
+cpp
+Copy code
+#include "Node.h"
+
+Node::Node() : data(-1), next(nullptr) {}
+
+Node::Node(int data) : data(data), next(NULL) {}
+________________________________________
+Linkedlist.h
+#include "Node.h"
+#include <iostream>
+using namespace std;
+class Linkedlist {private:
+    Node* head;
+public:
+    Linkedlist();
+    bool isEmpty();
+    void insertAtHead(int data);
+    void insertAtTail(int data);
+    void insertAtMiddle(int target, int data);
+    void removeNode(int target);
+    Node* search(int target);
+    void display();
+};
+Linkedlist.cpp
+#include "Linkedlist.h"
+
+Linkedlist::Linkedlist() : head(NULL) {}
+bool Linkedlist::isEmpty() {
+    return head == nullptr;
+}
+void Linkedlist::insertAtHead(int data) {
+    Node* newNode = new Node(data);
+    newNode->next = head;
+    head = newNode;
+}
+void Linkedlist::insertAtTail(int data) {
+    Node* newNode = new Node(data);
+    if (isEmpty()) {
+        head = newNode;
+    } else {
+        Node* current = head;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = newNode;
+    }
+}
+void Linkedlist::insertAtMiddle(int target, int data) {
+    if (isEmpty()) return;
+
+    Node* current = head;
+    while (current != NULL) {
+        if (current->data == target) {
+            Node* newNode = new Node(data);
+            newNode->next = current->next;
+            current->next = newNode;
+            return;
+        }
+        current = current->next;
+    }
+}
+void Linkedlist::removeNode(int target) {
+    if (isEmpty()) return;
+
+    if (head->data == target)
+    {
+        Node* temp = head;
+        head = head->next;
+        delete temp;
+        return;
+    }
+
+    Node* current = head;
+    while (current->next != nullptr && current->next->data != target) {
+        current = current->next;
+    }
+
+    if (current->next != NULL) 
+    {
+        Node* temp = current->next;
+        current->next = current->next->next;
+        delete temp;
+    }
+}
+Node* Linkedlist::search(int target) 
+{
+    Node* current = head;
+    while (current != nullptr) {
+        if (current->data == target) {
+            return current;
+        }
+        current = current->next;
+    }
+    return nullptr;
+}
+void Linkedlist::display()
+  {
+    if (isEmpty()) 
+    {
+        cout << "List is empty." << endl;
+        return;
+    }
+
+    Node* current = head;
+    while (current != NULL) 
+    {
+        cout << current->data << " ";
+        current = current->next;
+    }
+    cout << endl;
+}
+________________________________________
+main.cpp
+cpp
+Copy code
+#include "Linkedlist.h"
+int main() {
+    Linkedlist list;
+
+    list.insertAtHead(10);
+    list.insertAtTail(20);
+    list.insertAtHead(5);
+    list.insertAtTail(30);
+    list.insertAtMiddle(20, 25);
+    list.removeNode(10);
+    list.display();
+
+    Node* found = list.search(30);
+    if (found != NULL) {
+        cout << "Node with data 30 found." << endl;
+    } else {
+        cout << "Node with data 30 not found." << endl;
+    }
+
+    cout << "Final linked list:" << endl;
+    list.display();
+
+    return 0;
+}
+
