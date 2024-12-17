@@ -1,0 +1,200 @@
+Node.h
+class Node {public:
+    int data;
+    Node* next;
+    Node* prev;
+
+    Node(int data);
+};
+
+Node.cpp
+#include "Node.h"
+// Constructor for Node
+Node::Node(int data) {
+    this->data = data;
+    this->next = NULL;
+    this->prev = NULL;
+}
+
+CircularLinkedlist.h
+#include "Node.h"
+#include <iostream>
+using namespace std;
+class CircularLinkedlist {private:
+    Node* head;
+    Node* tail;
+public:
+    CircularLinkedlist();
+    bool isEmpty();
+    void insertAtHead(int data);
+    void insertAtTail(int data);
+    void insertAtMiddle(int target, int data);
+    void removeNode(int target);
+    Node* search(int target);
+    void displayForward();
+    void displayBackward();
+};
+
+CircularLinkedlist.cpp
+#include "CircularLinkedlist.h"
+// Constructor for CircularLinkedlist
+CircularLinkedlist::CircularLinkedlist() {
+    this->head = NULL;
+    this->tail = NULL;
+}
+// Check if the list is emptybool CircularLinkedlist::isEmpty() {
+    return this->head == NULL;
+}
+// Insert at the head of the circular listvoid CircularLinkedlist::insertAtHead(int data) {
+    Node* newNode = new Node(data);
+    if (this->isEmpty()) {
+        this->head = this->tail = newNode;
+        newNode->next = newNode;
+        newNode->prev = newNode;
+    } else {
+        newNode->next = this->head;
+        newNode->prev = this->tail;
+        this->tail->next = newNode;
+        this->head->prev = newNode;
+        this->head = newNode;
+    }
+}
+// Insert at the tail of the circular listvoid CircularLinkedlist::insertAtTail(int data) {
+    Node* newNode = new Node(data);
+    if (this->isEmpty()) {
+        this->head = this->tail = newNode;
+        newNode->next = newNode;
+        newNode->prev = newNode;
+    } else {
+        newNode->next = this->head;
+        newNode->prev = this->tail;
+        this->tail->next = newNode;
+        this->head->prev = newNode;
+        this->tail = newNode;
+    }
+}
+// Insert after a specific target nodevoid CircularLinkedlist::insertAtMiddle(int target, int data) {
+    if (this->isEmpty()) return;
+
+    Node* current = this->head;
+    do {
+        if (current->data == target) {
+            Node* newNode = new Node(data);
+            newNode->next = current->next;
+            newNode->prev = current;
+            current->next->prev = newNode;
+            current->next = newNode;
+
+            if (current == this->tail) {
+                this->tail = newNode;
+            }
+            return;
+        }
+        current = current->next;
+    } while (current != this->head);
+}
+// Remove a node with the specified valuevoid CircularLinkedlist::removeNode(int target) {
+    if (this->isEmpty()) return;
+
+    Node* current = this->head;
+    do {
+        if (current->data == target) {
+            if (current == this->head) {
+                this->head = current->next;
+                this->tail->next = this->head;
+                this->head->prev = this->tail;
+            } else if (current == this->tail) {
+                this->tail = current->prev;
+                this->tail->next = this->head;
+                this->head->prev = this->tail;
+            } else {
+                current->prev->next = current->next;
+                current->next->prev = current->prev;
+            }
+
+            delete current;
+            if (this->head == this->tail && this->head->data == target) {
+                this->head = this->tail = nullptr;
+            }
+            return;
+        }
+        current = current->next;
+    } while (current != this->head);
+}
+// Search for a node with the specified valueNode* CircularLinkedlist::search(int target) {
+    if (this->isEmpty()) return nullptr;
+
+    Node* current = this->head;
+    do {
+        if (current->data == target) {
+            return current;
+        }
+        current = current->next;
+    } while (current != this->head);
+
+    return nullptr;
+}
+// Display the list in forward ordervoid CircularLinkedlist::displayForward() {
+    if (this->isEmpty()) {
+        cout << "List is empty." << endl;
+        return;
+    }
+
+    Node* current = this->head;
+    do {
+        cout << current->data << " ";
+        current = current->next;
+    } while (current != this->head);
+    cout << endl;
+}
+// Display the list in backward ordervoid CircularLinkedlist::displayBackward() {
+    if (this->isEmpty()) {
+        cout << "List is empty." << endl;
+        return;
+    }
+
+    Node* current = this->tail;
+    do {
+        cout << current->data << " ";
+        current = current->prev;
+    } while (current != this->tail);
+    cout << endl;
+}
+________________________________________
+main.cpp
+#include "CircularLinkedlist.h"
+int main() {
+    CircularLinkedlist list;
+
+    // Inserting at head and tail
+    list.insertAtHead(10);
+    list.insertAtTail(20);
+    list.insertAtHead(5);
+    list.insertAtTail(30);
+
+    // Inserting in the middle
+    list.insertAtMiddle(20, 25);
+
+    // Displaying the list
+    cout << "List in forward order:" << endl;
+    list.displayForward();
+
+    cout << "List in backward order:" << endl;
+    list.displayBackward();
+
+    // Searching for a value
+    Node* found = list.search(25);
+    if (found != nullptr) {
+        cout << "Node with data 25 found." << endl;
+    } else {
+        cout << "Node with data 25 not found." << endl;
+    }
+
+    // Removing a value
+    list.removeNode(10);
+    cout << "After removing 10:" << endl;
+    list.displayForward();
+
+    return 0;
+}
+
